@@ -58,7 +58,7 @@ open "/Applications/SWE 工作台.app"
 ## 从源码构建
 
 ```bash
-git clone git@github.com:kekelele996/swe-workbench.git
+git clone https://github.com/kekelele996/swe-workbench.git
 cd swe-workbench
 ./build.sh --no-dmg
 ```
