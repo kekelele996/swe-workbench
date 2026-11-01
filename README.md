@@ -7,7 +7,7 @@
 不需要 Electron，也不需要常驻云端。
 
 - 仓库：<https://github.com/kekelele996/swe-workbench>
-- 发布包：GitHub Releases → `SWE 工作台-1.1.0.zip`
+- 发布包：GitHub Releases → `SWE-Workbench-1.1.0.zip`
 
 ## 功能
 
@@ -36,7 +36,7 @@
 ## 安装发布包
 
 1. 从 [Releases](https://github.com/kekelele996/swe-workbench/releases) 下载
-   `SWE 工作台-1.1.0.zip` 并解压。
+   `SWE-Workbench-1.1.0.zip` 并解压。
 2. 把 `SWE 工作台.app` 拖到 `/Applications`。
 3. 首次打开：右键 →「打开」（App 使用 ad-hoc 签名，未做 Apple 公证）。
    如果仍被 Gatekeeper 拦住：
@@ -69,7 +69,7 @@ cd swe-workbench
 2. 编译 `Sources/` 的 Swift 宿主；
 3. 把 `swe-flow`、`tools/` 和 App 图标装进 App 包；
 4. ad-hoc 签名，生成 `dist/SWE 工作台.app` 和
-   `dist/SWE 工作台-1.1.0.zip`。
+   `dist/SWE 工作台-1.1.0.zip` 和 `dist/SWE-Workbench-1.1.0.zip`。
 
 需要 DMG 时去掉 `--no-dmg`：
 
@@ -90,7 +90,8 @@ SWE_TOOLS_DIR=/path/to/tools ./build.sh --no-dmg
 ```text
 dist/SWE 工作台.app
 dist/SWE 工作台-1.1.0.zip
-dist/SWE 工作台-1.1.0.dmg   # 不带 --no-dmg 时
+dist/SWE-Workbench-1.1.0.zip   # GitHub Release 用 ASCII 文件名
+dist/SWE 工作台-1.1.0.dmg      # 不带 --no-dmg 时
 ```
 
 安装：
@@ -178,7 +179,7 @@ App 数据：`~/Library/Application Support/SWE Workbench/`
 git add -A && git commit -m "release: v1.1.0"
 git tag -a v1.1.0 -m "SWE 工作台 1.1.0"
 git push origin main --tags
-gh release create v1.1.0 "dist/SWE 工作台-1.1.0.zip" \
+gh release create v1.1.0 "dist/SWE-Workbench-1.1.0.zip" \
   --title "SWE 工作台 1.1.0" \
   --notes "多 SWE 用户、设置页、Session 核验诊断与稳定性修复。"
 ```

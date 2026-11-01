@@ -113,6 +113,9 @@ echo "    签名校验通过"
 
 echo "==> 打包"
 ditto -c -k --keepParent "$APP" "$DIST_DIR/$APP_NAME-$VERSION.zip"
+# GitHub release assets are safer with an ASCII filename; keep the localized
+# zip for local use as well.
+cp "$DIST_DIR/$APP_NAME-$VERSION.zip" "$DIST_DIR/SWE-Workbench-$VERSION.zip"
 
 if [[ $MAKE_DMG -eq 1 ]]; then
   STAGE="$BUILD_DIR/dmg"
