@@ -7,7 +7,7 @@
 不需要 Electron，也不需要常驻云端。
 
 - 仓库：<https://github.com/kekelele996/swe-workbench>
-- 发布包：GitHub Releases → `SWE-Workbench-1.1.1.zip`
+- 部署：从源码构建（见下文）；GitHub Releases 记录版本与变更。
 
 ## 功能
 
@@ -37,10 +37,10 @@
 
 ## 安装发布包
 
-1. 从 [Releases](https://github.com/kekelele996/swe-workbench/releases) 下载
-   `SWE-Workbench-1.1.1.zip` 并解压。
-2. 把 `SWE 工作台.app` 拖到 `/Applications`。
-3. 首次打开：右键 →「打开」（App 使用 ad-hoc 签名，未做 Apple 公证）。
+推荐从源码构建（见下一节）；构建后的安装步骤如下。
+
+1. 把构建出的 `dist/SWE 工作台.app` 拖到 `/Applications`。
+2. 首次打开：右键 →「打开」（App 使用 ad-hoc 签名，未做 Apple 公证）。
    如果仍被 Gatekeeper 拦住：
 
    ```bash
@@ -48,7 +48,7 @@
    open "/Applications/SWE 工作台.app"
    ```
 
-4. 首次启动按提示允许访问「文稿」目录；工作台只在所选目录内读写任务。
+3. 首次启动按提示允许访问「文稿」目录；工作台只在所选目录内读写任务。
 
 命令行安装：
 
