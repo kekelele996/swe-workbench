@@ -1,0 +1,20 @@
+# build output
+build/
+dist/
+.build/
+
+# local evidence and design notes (not part of the public tool)
+evidence/
+docs/
+
+# python/runtime caches
+__pycache__/
+*.pyc
+*.bak-*
+
+# secrets/local config
+.env
+*.local
+
+# macOS
+.DS_Store
