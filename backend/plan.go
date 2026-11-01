@@ -237,8 +237,9 @@ func isPlaceholder(value string) bool {
 // Trae also renames the CN product label between releases ("TraeCode CN" in
 // 3.3.x, "TRAE CN" from 3.4.x), so only that label is matched
 // case-insensitively; the identity segments, version, environment flags and
-// timestamp stay exact.
-var traeTokenPattern = regexp.MustCompile(`^[0-9a-f]{16}:[0-9a-f]{32}_[0-9a-f]{24}\.[0-9a-f]{24}\.[0-9a-f]{24}:(?i:Trae(?:Code|Work)? CN)\.[0-9]+\.[0-9]+\.[0-9]+\.[^\r\n:]+\.T\([0-9]{4}/[0-9]{1,2}/[0-9]{1,2} [0-9]{2}:[0-9]{2}:[0-9]{2}\)$`)
+// timestamp stay exact. Trae CN 3.4.11 emits a 15-digit leading identity while
+// older releases used 16 hexadecimal characters, so both widths are valid.
+var traeTokenPattern = regexp.MustCompile(`^[0-9a-f]{15,16}:[0-9a-f]{32}_[0-9a-f]{24}\.[0-9a-f]{24}\.[0-9a-f]{24}:(?i:Trae(?:Code|Work)? CN)\.[0-9]+\.[0-9]+\.[0-9]+\.[^\r\n:]+\.T\([0-9]{4}/[0-9]{1,2}/[0-9]{1,2} [0-9]{2}:[0-9]{2}:[0-9]{2}\)$`)
 
 // sessionTokenPrefix matches the label-independent opening of a Trae session
 // token, so leaked telemetry is rejected even if the product label changes.

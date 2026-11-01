@@ -75,20 +75,35 @@ func TestValidateTraeSessionTokenAcceptsCurrentTraeCNLabel(t *testing.T) {
 	if current == legacy {
 		t.Fatal("fixture did not switch the product label")
 	}
-	for _, token := range []string{legacy, current} {
-		if err := ValidateTraeSessionToken(token); err != nil {
-			t.Fatalf("valid Trae CN token rejected: %v", err)
-		}
+	// Trae CN 3.4.11 uses a 15-digit leading identity instead of the older
+	// 16-character value. Keep both forms valid while rejecting other widths.
+	shortPrefix := strings.Replace(current, ":TRAE CN.3.4.7.", ":TRAE CN.3.4.11.", 1)
+	shortPrefix = strings.Replace(shortPrefix, strings.Repeat("a", 16)+":", strings.Repeat("a", 15)+":", 1)
+	valid := map[string]string{
+		"legacy label with 16-character prefix":  legacy,
+		"current label with 16-character prefix": current,
+		"3.4.11 label with 15-digit prefix":      shortPrefix,
 	}
-	broken := []string{
-		strings.TrimSuffix(current, "T(2026/10/5 20:14:45)"),
-		strings.Replace(current, ":TRAE CN.", ":TraeWork.", 1),
-		strings.Replace(current, strings.Repeat("a", 16), "…", 1),
+	for name, token := range valid {
+		t.Run(name, func(t *testing.T) {
+			if err := ValidateTraeSessionToken(token); err != nil {
+				t.Fatalf("valid Trae CN token rejected: %v", err)
+			}
+		})
 	}
-	for _, token := range broken {
-		if err := ValidateTraeSessionToken(token); err == nil {
-			t.Fatalf("incomplete token accepted: %q", token)
-		}
+	broken := map[string]string{
+		"missing timestamp":   strings.TrimSuffix(current, "T(2026/10/5 20:14:45)"),
+		"unsupported label":   strings.Replace(current, ":TRAE CN.", ":TraeWork.", 1),
+		"placeholder prefix":  strings.Replace(current, strings.Repeat("a", 16), "…", 1),
+		"14-character prefix": strings.Replace(current, strings.Repeat("a", 16)+":", strings.Repeat("a", 14)+":", 1),
+		"17-character prefix": strings.Replace(current, strings.Repeat("a", 16)+":", strings.Repeat("a", 17)+":", 1),
+	}
+	for name, token := range broken {
+		t.Run(name, func(t *testing.T) {
+			if err := ValidateTraeSessionToken(token); err == nil {
+				t.Fatalf("incomplete token accepted: %q", token)
+			}
+		})
 	}
 }
 
