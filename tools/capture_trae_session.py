@@ -21,7 +21,9 @@ import tempfile
 
 
 TOKEN = re.compile(
-    r"[0-9a-f]{16}:[0-9a-f]{32}_(?P<first>[0-9a-f]{24})"
+    # Trae CN 3.4.11 uses a 15-digit leading identity; older releases used 16
+    # hexadecimal characters. Keep both widths valid.
+    r"[0-9a-f]{15,16}:[0-9a-f]{32}_(?P<first>[0-9a-f]{24})"
     r"\.(?P<second>[0-9a-f]{24})\.(?P<third>[0-9a-f]{24})"
     # Trae renamed the CN product label in 3.4 ("TraeCode CN" -> "TRAE CN"), so
     # only the label is case-insensitive; the rest stays exact.

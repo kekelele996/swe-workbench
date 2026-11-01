@@ -48,6 +48,7 @@ func TestFieldReviewBlocksInvalidRubricResultsAndCrossFieldClaims(t *testing.T) 
 		{"original repo", "commit_url", "https://github.com/original/repo/commit/" + strings.Repeat("b", 40)},
 		{"mixed commit", "commit_ref", "v1.0 (" + strings.Repeat("a", 40) + ")"},
 		{"placeholder field", "task_type", "待补充"},
+		{"15-digit session leak", "authenticity_note", strings.Repeat("a", 15) + ":" + strings.Repeat("b", 32) + "_leak"},
 		{"secondary session", "trae_session_id_2", "cannot fill this"},
 		{"seed rounds", "seed_rounds", 0},
 	}

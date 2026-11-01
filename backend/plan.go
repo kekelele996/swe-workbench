@@ -243,7 +243,7 @@ var traeTokenPattern = regexp.MustCompile(`^[0-9a-f]{15,16}:[0-9a-f]{32}_[0-9a-f
 
 // sessionTokenPrefix matches the label-independent opening of a Trae session
 // token, so leaked telemetry is rejected even if the product label changes.
-var sessionTokenPrefix = regexp.MustCompile(`[0-9a-f]{16}:[0-9a-f]{32}_`)
+var sessionTokenPrefix = regexp.MustCompile(`[0-9a-f]{15,16}:[0-9a-f]{32}_`)
 
 func ValidateTraeSessionToken(token string) error {
 	if !traeTokenPattern.MatchString(token) || strings.ContainsAny(token, "…") || strings.Contains(token, "...") {
