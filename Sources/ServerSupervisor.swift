@@ -139,7 +139,11 @@ final class ServerSupervisor {
         let proc = Process()
         proc.executableURL = binary
         proc.arguments = ["serve", "-root", root.path, "-port", String(port)]
-        proc.currentDirectoryURL = root
+        // The explicit -root argument carries the work directory. Do not make
+        // the Go child inherit a TCC-protected directory as its cwd: after an
+        // ad-hoc rebuild, resolving that cwd can block before the server starts
+        // and macOS may not get a chance to present the Documents permission.
+        proc.currentDirectoryURL = FileManager.default.temporaryDirectory
 
         var environment = ProcessInfo.processInfo.environment
         environment["PATH"] = Self.childPath()
