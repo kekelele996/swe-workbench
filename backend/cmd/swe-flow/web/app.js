@@ -835,7 +835,7 @@ async function renderRemoteNext(item) {
       app.busy = false;
       setScope('mine');
       navigate('/tasks/' + data.task.key);
-      showNotice(data.archived ? `源码已准备；上次中断留下的目录已归档到 ${data.archived}。` : '源码已准备。复制路径和题面到 Trae 执行。');
+      showNotice((data.archived ? `源码已准备；上次中断留下的目录已归档到 ${data.archived}。` : '源码已准备。复制路径和题面到 Trae 执行。') + (data.language_fallback ? ' GitHub 语言读取失败，已按「其他」继续；可在提交字段里修改主要语言。' : ''));
     }, '克隆中…'));
     return;
   }

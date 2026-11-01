@@ -170,7 +170,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApp.activate(ignoringOtherApps: true)
         NSApp.orderFrontStandardAboutPanel(options: [
             .applicationName: "SWE 工作台",
-            .applicationVersion: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.1.0",
+            .applicationVersion: Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "1.1.1",
             .version: "swe-flow 本地工作台",
             .credits: NSAttributedString(string: "面向 SWE 题目制作、验收与提交的本地工作台。",
                                          attributes: [.font: NSFont.systemFont(ofSize: 11)])

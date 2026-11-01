@@ -743,7 +743,7 @@ func (w *workbenchServer) prepareIsolatedTask(ctx context.Context, item client.I
 		return preparedTask{}, fmt.Errorf("预检配套设计无法核对: %w", designErr)
 	}
 	if designErr == nil {
-		if design.Language != language {
+		if design.Language != "" && design.Language != language {
 			return preparedTask{}, fmt.Errorf("仓库语言与已记录设计不同，请核查")
 		}
 		commit := design.Materials.BaselineCommit
@@ -794,26 +794,38 @@ func (w *workbenchServer) prepareIsolatedTask(ctx context.Context, item client.I
 	return preparedTask{StatePath: statePath, Archived: archived}, nil
 }
 
+// fallbackLanguage is a valid platform select option. A GitHub language lookup
+// is a convenience, not a prerequisite for a locally verified task: an
+// unauthenticated lookup can be rate-limited (HTTP 403) or proxied away after
+// the source itself is already verifiable. Keep the task creatable and let the
+// operator adjust the submission field later.
+const fallbackLanguage = "其他"
+
 // startLanguage decides the language recorded for a new task. An approved local
 // design already stores the language that was verified against the fixed
 // baseline when the task was designed, so that record is reused instead of
-// re-querying GitHub for the same precheck. The GitHub lookup stays as the
-// fallback for prechecks without a design record; its unauthenticated quota is
-// shared per exit IP and must not block a task that is otherwise fully verified
-// locally.
+// re-querying GitHub for the same precheck. The GitHub lookup is only a
+// best-effort fallback for prechecks without a design record.
 func (w *workbenchServer) startLanguage(ctx context.Context, item client.ItemDetail) (string, error) {
 	design, err := approvedPrecheckDesign(ctx, item)
 	if err == nil {
-		language := strings.TrimSpace(design.Language)
-		if language == "" {
-			return "", fmt.Errorf("已记录的设计缺少主要语言")
+		if language := strings.TrimSpace(design.Language); language != "" {
+			return language, nil
 		}
-		return language, nil
-	}
-	if !errors.Is(err, os.ErrNotExist) {
+	} else if !errors.Is(err, os.ErrNotExist) {
 		return "", fmt.Errorf("预检配套设计无法核对: %w", err)
 	}
-	return w.resolveLanguage(ctx, item.RepoURL)
+	if w.resolveLanguage == nil {
+		return fallbackLanguage, nil
+	}
+	language, err := w.resolveLanguage(ctx, item.RepoURL)
+	if err != nil {
+		return fallbackLanguage, nil
+	}
+	if language = strings.TrimSpace(language); language == "" {
+		return fallbackLanguage, nil
+	}
+	return language, nil
 }
 
 func (w *workbenchServer) startPrecheck(out http.ResponseWriter, r *http.Request) {
@@ -898,7 +910,10 @@ func (w *workbenchServer) startPrecheck(out http.ResponseWriter, r *http.Request
 		return
 	}
 	planReady := w.prepareTaskPlan(r.Context(), prepared.StatePath, state) == nil
-	writeWorkbenchJSON(out, 201, map[string]any{"task": w.taskView(r.Context(), prepared.StatePath), "plan_ready": planReady, "archived": prepared.Archived})
+	writeWorkbenchJSON(out, 201, map[string]any{
+		"task": w.taskView(r.Context(), prepared.StatePath), "plan_ready": planReady, "archived": prepared.Archived,
+		"language": language, "language_fallback": language == fallbackLanguage,
+	})
 }
 
 func (w *workbenchServer) executionDetails(out http.ResponseWriter, r *http.Request) {

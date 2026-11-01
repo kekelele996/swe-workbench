@@ -495,8 +495,8 @@ func TestStartLanguageFallsBackToResolverWithoutDesign(t *testing.T) {
 	w.resolveLanguage = func(context.Context, string) (string, error) {
 		return "", fmt.Errorf("仓库主要语言读取失败（GitHub 返回 HTTP 403）")
 	}
-	if _, err := w.startLanguage(ctx, item); err == nil || !strings.Contains(err.Error(), "403") {
-		t.Fatalf("expected GitHub failure to surface, got %v", err)
+	if language, err := w.startLanguage(ctx, item); err != nil || language != fallbackLanguage {
+		t.Fatalf("GitHub failure must fall back to %q, got language=%q err=%v", fallbackLanguage, language, err)
 	}
 }
 

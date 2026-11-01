@@ -1,13 +1,13 @@
 # SWE 工作台 · SWE Workbench
 
-**v1.1.0** · macOS 13+ · Apple Silicon
+**v1.1.1** · macOS 13+ · Apple Silicon
 
 一个本地优先的 SWE 任务工作台：把个人预检、源码准备、Trae 执行、Codex 验收、
 证据链和平台提交收在同一个窗口里。界面是原生 WKWebView 壳，后端是本机 Go 服务，
 不需要 Electron，也不需要常驻云端。
 
 - 仓库：<https://github.com/kekelele996/swe-workbench>
-- 发布包：GitHub Releases → `SWE-Workbench-1.1.0.zip`
+- 发布包：GitHub Releases → `SWE-Workbench-1.1.1.zip`
 
 ## 功能
 
@@ -20,6 +20,8 @@
 - **工作台设置**：GitHub 拉取代理与延迟测试、工作目录、多个 SWE 用户切换。
 - **Session 核验**：完整原串对本机 Trae 日志/历史快照核验，失败时返回具体原因，
   而不是一条笼统的“未核实”。
+- **语言查询不阻塞**：GitHub 语言接口 403/限流时按「其他」继续建任务，已有设计记录
+  直接复用，不把网络查询当成创建任务的前置条件。
 - **本地安全边界**：服务只监听 `127.0.0.1`，写请求校验 Origin + CSRF；
   平台凭据只存在本机 `0600` 私有文件，不回显、不进入任务材料。
 
@@ -36,7 +38,7 @@
 ## 安装发布包
 
 1. 从 [Releases](https://github.com/kekelele996/swe-workbench/releases) 下载
-   `SWE-Workbench-1.1.0.zip` 并解压。
+   `SWE-Workbench-1.1.1.zip` 并解压。
 2. 把 `SWE 工作台.app` 拖到 `/Applications`。
 3. 首次打开：右键 →「打开」（App 使用 ad-hoc 签名，未做 Apple 公证）。
    如果仍被 Gatekeeper 拦住：
@@ -69,13 +71,13 @@ cd swe-workbench
 2. 编译 `Sources/` 的 Swift 宿主；
 3. 把 `swe-flow`、`tools/` 和 App 图标装进 App 包；
 4. ad-hoc 签名，生成 `dist/SWE 工作台.app` 和
-   `dist/SWE 工作台-1.1.0.zip` 和 `dist/SWE-Workbench-1.1.0.zip`。
+   `dist/SWE 工作台-1.1.1.zip` 和 `dist/SWE-Workbench-1.1.1.zip`。
 
 需要 DMG 时去掉 `--no-dmg`：
 
 ```bash
 ./build.sh
-# dist/SWE 工作台-1.1.0.dmg
+# dist/SWE 工作台-1.1.1.dmg
 ```
 
 自定义后端或工具目录（例如调试一个预编译的 `swe-flow`）：
@@ -89,9 +91,9 @@ SWE_TOOLS_DIR=/path/to/tools ./build.sh --no-dmg
 
 ```text
 dist/SWE 工作台.app
-dist/SWE 工作台-1.1.0.zip
-dist/SWE-Workbench-1.1.0.zip   # GitHub Release 用 ASCII 文件名
-dist/SWE 工作台-1.1.0.dmg      # 不带 --no-dmg 时
+dist/SWE 工作台-1.1.1.zip
+dist/SWE-Workbench-1.1.1.zip   # GitHub Release 用 ASCII 文件名
+dist/SWE 工作台-1.1.1.dmg      # 不带 --no-dmg 时
 ```
 
 安装：
@@ -165,7 +167,7 @@ App 数据：`~/Library/Application Support/SWE Workbench/`
 
 ## 版本与发布
 
-当前版本：**1.1.0**（`VERSION`，`CFBundleVersion` 2）。
+当前版本：**1.1.1**（`VERSION`，`CFBundleVersion` 3）。
 
 版本号只有一个来源：仓库根目录的 `VERSION`。`build.sh` 读取它，写入 App 的
 `CFBundleShortVersionString`，并用于 zip/dmg 文件名；`Assets/Info.plist` 和
@@ -176,13 +178,19 @@ App 数据：`~/Library/Application Support/SWE Workbench/`
 ```bash
 # 修改 VERSION 后
 ./build.sh                 # 生成 zip/dmg
-git add -A && git commit -m "release: v1.1.0"
-git tag -a v1.1.0 -m "SWE 工作台 1.1.0"
+git add -A && git commit -m "release: v1.1.1"
+git tag -a v1.1.1 -m "SWE 工作台 1.1.1"
 git push origin main --tags
-gh release create v1.1.0 "dist/SWE-Workbench-1.1.0.zip" \
-  --title "SWE 工作台 1.1.0" \
+gh release create v1.1.1 "dist/SWE-Workbench-1.1.1.zip" \
+  --title "SWE 工作台 1.1.1" \
   --notes "多 SWE 用户、设置页、Session 核验诊断与稳定性修复。"
 ```
+
+### 1.1.1
+
+- GitHub 主要语言查询失败（例如 HTTP 403、限流或代理不可用）不再阻止创建任务；
+  自动按「其他」继续，并在准备完成的提示里说明，可在提交字段里修改。
+- 语言查询只作为便利信息：已有出题设计记录时直接复用设计语言，不再访问 GitHub。
 
 ### 1.1.0 主要变化
 
