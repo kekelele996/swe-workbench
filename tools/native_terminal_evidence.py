@@ -59,7 +59,7 @@ def redact(text: str, *, identities: tuple[str, ...] | None = None) -> str:
     text = re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", text)
     text = re.sub(r"[\x00-\x08\x0b-\x1f\x7f]", "", text)
     text = re.sub(r"(?im)^.*(?:authorization:|swe_qa_(?:session|csrf)|(?:password|api[_-]?key|access[_-]?token|secret)\s*[=:]).*$", "[REDACTED CREDENTIAL]", text)
-    text = re.sub(r"\b[0-9a-f]{16}:[^\r\n]*?\.T\([^\r\n]*?\)", "[REDACTED TRAE TOKEN]", text, flags=re.I)
+    text = re.sub(r"\b[0-9a-f]{15,16}:[^\r\n]*?\.T\([^\r\n]*?\)", "[REDACTED TRAE TOKEN]", text, flags=re.I)
     text = re.sub(r"\b[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b", "[REDACTED EMAIL]", text)
     text = re.sub(r"(?<![.A-Za-z0-9])(?:[A-Za-z]:[\\/]|/)[^\s\"'<>|]+", "[REDACTED PATH]", text)
     text = re.sub(r"\b[0-9a-f]{16,}\b|\b[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}\b", "[REDACTED ID]", text, flags=re.I)
