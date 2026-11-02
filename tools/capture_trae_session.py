@@ -21,7 +21,7 @@ import tempfile
 
 
 TOKEN = re.compile(
-    r"[0-9a-f]{15,16}:[0-9a-f]{32}_(?P<first>[0-9a-f]{24})"
+    r"[0-9a-f]{15,16}:(?:[0-9a-f]{32}|no_trace)_(?P<first>[0-9a-f]{24})"
     r"\.(?P<second>[0-9a-f]{24})\.(?P<third>[0-9a-f]{24})"
     # Trae renamed the CN product label in 3.4 ("TraeCode CN" -> "TRAE CN"), so
     # only the label is case-insensitive; the rest stays exact.

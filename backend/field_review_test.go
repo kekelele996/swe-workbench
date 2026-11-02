@@ -38,6 +38,7 @@ func TestFieldReviewBlocksInvalidRubricResultsAndCrossFieldClaims(t *testing.T) 
 		{"title leak", "authenticity_note", "参考 Issue #123"},
 		{"path leak", "involved_modules", "/Users/test/private/pkg/api"},
 		{"session leak", "involved_modules", "1" + strings.Repeat("2", 14) + ":" + strings.Repeat("3", 32) + "_" + strings.Repeat("4", 24)},
+		{"no-trace session leak", "involved_modules", "1" + strings.Repeat("2", 14) + ":no_trace_" + strings.Repeat("4", 24)},
 		{"results missing", "artifact_result", "1 通过"},
 		{"bad punctuation", "artifact_result", "1. 通过\n2 通过\n3 通过\n4 通过\n5 通过"},
 		{"failure has no reason", "artifact_result", "1 未通过\n2 通过\n3 通过\n4 通过\n5 通过"},

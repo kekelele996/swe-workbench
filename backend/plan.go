@@ -234,16 +234,17 @@ func isPlaceholder(value string) bool {
 
 // This is the complete format observed from the first Agent avatar in Trae CN.
 // The leading identity segment is 15 digits in some 3.4.x builds and 16 hex
-// digits in others. no_sid is a suffix flag, not evidence that the embedded
-// chat ID is missing. Trae also renames the CN product label between releases
+// digits in others. Its trace component is either a 32-hex id or the literal
+// no_trace marker. no_sid is a suffix flag, not evidence that the embedded chat
+// ID is missing. Trae also renames the CN product label between releases
 // ("TraeCode CN" in 3.3.x, "TRAE CN" from 3.4.x), so only that label is
 // matched case-insensitively; the identity segments, version, environment
 // flags and timestamp stay exact.
-var traeTokenPattern = regexp.MustCompile(`^[0-9a-f]{15,16}:[0-9a-f]{32}_[0-9a-f]{24}\.[0-9a-f]{24}\.[0-9a-f]{24}:(?i:Trae(?:Code|Work)? CN)\.[0-9]+\.[0-9]+\.[0-9]+\.[^\r\n:]+\.T\([0-9]{4}/[0-9]{1,2}/[0-9]{1,2} [0-9]{2}:[0-9]{2}:[0-9]{2}\)$`)
+var traeTokenPattern = regexp.MustCompile(`^[0-9a-f]{15,16}:(?:[0-9a-f]{32}|no_trace)_[0-9a-f]{24}\.[0-9a-f]{24}\.[0-9a-f]{24}:(?i:Trae(?:Code|Work)? CN)\.[0-9]+\.[0-9]+\.[0-9]+\.[^\r\n:]+\.T\([0-9]{4}/[0-9]{1,2}/[0-9]{1,2} [0-9]{2}:[0-9]{2}:[0-9]{2}\)$`)
 
 // sessionTokenPrefix matches the label-independent opening of a Trae session
 // token, so leaked telemetry is rejected even if the product label changes.
-var sessionTokenPrefix = regexp.MustCompile(`[0-9a-f]{15,16}:[0-9a-f]{32}_`)
+var sessionTokenPrefix = regexp.MustCompile(`[0-9a-f]{15,16}:(?:[0-9a-f]{32}|no_trace)_`)
 
 func ValidateTraeSessionToken(token string) error {
 	if !traeTokenPattern.MatchString(token) || strings.ContainsAny(token, "…") || strings.Contains(token, "...") {
