@@ -32,16 +32,17 @@ fi
 
 # Prefer the checked-in backend/tools so a fresh clone builds without the
 # ~/.codex skill directory. SWE_FLOW_BIN can still point at a prebuilt binary.
-BIN_SRC="${SWE_FLOW_BIN:-$ROOT/.build/swe-flow}"
-if [[ ! -x "$BIN_SRC" ]]; then
-  if [[ -f "$ROOT/backend/go.mod" ]]; then
-    command -v go >/dev/null 2>&1 || { echo "需要 Go 1.22+ 来构建 backend" >&2; exit 1; }
-    mkdir -p "$ROOT/.build"
-    echo "==> 构建 swe-flow（backend）"
-    (cd "$ROOT/backend" && go build -trimpath -o "$BIN_SRC" ./cmd/swe-flow)
-  else
-    BIN_SRC="$SKILL_DIR/runtime/bin/swe-flow"
-  fi
+# Only reuse .build when SWE_FLOW_BIN is not explicitly provided. Reusing the
+# previous build by default silently ships stale backend code after source edits.
+BIN_SRC="${SWE_FLOW_BIN:-}"
+if [[ -z "$BIN_SRC" && -f "$ROOT/backend/go.mod" ]]; then
+  command -v go >/dev/null 2>&1 || { echo "需要 Go 1.22+ 来构建 backend" >&2; exit 1; }
+  mkdir -p "$ROOT/.build"
+  BIN_SRC="$ROOT/.build/swe-flow"
+  echo "==> 构建 swe-flow（backend）"
+  (cd "$ROOT/backend" && go build -trimpath -o "$BIN_SRC" ./cmd/swe-flow)
+elif [[ -z "$BIN_SRC" ]]; then
+  BIN_SRC="$SKILL_DIR/runtime/bin/swe-flow"
 fi
 TOOLS_SRC="${SWE_TOOLS_DIR:-$ROOT/tools}"
 if [[ ! -d "$TOOLS_SRC" ]]; then
