@@ -61,7 +61,7 @@ def collect(source, plan_path, output):
         raise ValueError("导出文件与实际执行题面不匹配或 Session 未捕获")
     message_audit = check_prompt_messages(text, prompt)
     text = text.replace(token, "[session redacted]")
-    text = re.sub(r"[0-9a-f]{16}:[0-9a-f]{32}_[^\s`]+(?: CN[^\n`]+)?", "[session redacted]", text)
+    text = re.sub(r"[0-9a-f]{15,16}:(?:[0-9a-f]{32}|no_trace)_[^\s`]+(?: CN[^\n`]+)?", "[session redacted]", text)
     text = re.sub(r"(?:/Users/|/home/)[^\s`\"'<>]+", "[local path redacted]", text)
     text = re.sub(r"[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}", "[email redacted]", text)
     text = re.sub(r"(?im)^.*(?:cookie|authorization|password|密码)\s*[:=].*$", "[credential redacted]", text)

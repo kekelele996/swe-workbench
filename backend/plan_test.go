@@ -69,13 +69,15 @@ func syntheticToken() string {
 	return strings.Repeat("a", 16) + ":" + strings.Repeat("b", 32) + "_" + strings.Repeat("c", 24) + "." + strings.Repeat("d", 24) + "." + strings.Repeat("e", 24) + ":TraeCode CN.3.3.90.no_sid.no_ppe.T(2026/10/5 20:14:45)"
 }
 
-func TestValidateTraeSessionTokenAcceptsCurrentTraeCNLabel(t *testing.T) {
+func TestValidateTraeSessionTokenAcceptsCurrentTraeCNLabelAndCompactPrefix(t *testing.T) {
 	legacy := syntheticToken()
 	current := strings.Replace(legacy, ":TraeCode CN.3.3.90.", ":TRAE CN.3.4.7.", 1)
 	if current == legacy {
 		t.Fatal("fixture did not switch the product label")
 	}
-	for _, token := range []string{legacy, current} {
+	compactPrefix := strings.Repeat("1", 15) + ":" + strings.Repeat("2", 32) + "_" + strings.Repeat("c", 24) + "." + strings.Repeat("d", 24) + "." + strings.Repeat("e", 24) + ":TRAE CN.3.4.11.no_sid.no_ppe.T(2026/11/2 13:17:41)"
+	noTrace := strings.Repeat("1", 15) + ":no_trace_" + strings.Repeat("c", 24) + "." + strings.Repeat("d", 24) + "." + strings.Repeat("e", 24) + ":TRAE CN.3.4.11.no_sid.no_ppe.T(2026/11/2 13:17:41)"
+	for _, token := range []string{legacy, current, compactPrefix, noTrace} {
 		if err := ValidateTraeSessionToken(token); err != nil {
 			t.Fatalf("valid Trae CN token rejected: %v", err)
 		}
@@ -84,6 +86,8 @@ func TestValidateTraeSessionTokenAcceptsCurrentTraeCNLabel(t *testing.T) {
 		strings.TrimSuffix(current, "T(2026/10/5 20:14:45)"),
 		strings.Replace(current, ":TRAE CN.", ":TraeWork.", 1),
 		strings.Replace(current, strings.Repeat("a", 16), "…", 1),
+		strings.Repeat("1", 14) + compactPrefix[len(strings.Repeat("1", 15)):],
+		strings.Repeat("1", 14) + noTrace[len(strings.Repeat("1", 15)):],
 	}
 	for _, token := range broken {
 		if err := ValidateTraeSessionToken(token); err == nil {

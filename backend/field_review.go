@@ -96,7 +96,7 @@ func FieldRules(key string) []string {
 	return []string{"遵守实时平台必填、类型、长度、日期与枚举规则，内容需有实际来源"}
 }
 
-var sourceLeak = regexp.MustCompile(`(?i)https?://github\.com/[^\s]+/(issues|pull)/|\bissue\s*#\s*\d+|参考\s*issue|/Users/|/home/|[A-Za-z]:\\|swe_qa_session|swe_qa_csrf|[0-9a-f]{16}:[0-9a-f]{32}_`)
+var sourceLeak = regexp.MustCompile(`(?i)https?://github\.com/[^\s]+/(issues|pull)/|\bissue\s*#\s*\d+|参考\s*issue|/Users/|/home/|[A-Za-z]:\\|swe_qa_session|swe_qa_csrf|[0-9a-f]{15,16}:(?:[0-9a-f]{32}|no_trace)_`)
 var resultLine = regexp.MustCompile(`^([1-9][0-9]*) (通过|未通过)(?: (.+))?$`)
 var commitLink = regexp.MustCompile(`^https://github\.com/([A-Za-z0-9_.-]+)/([A-Za-z0-9_.-]+)/commit/([0-9a-fA-F]{40})$`)
 
